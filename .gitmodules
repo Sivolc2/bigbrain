@@ -1,0 +1,3 @@
+[submodule "new-langgraph-project"]
+	path = new-langgraph-project
+	url = https://github.com/langchain-ai/new-langgraph-project
