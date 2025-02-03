@@ -105,7 +105,7 @@ def create_fast_thinker():
     Current conversation:
     {messages}
     
-    Before you beging, please identify yourself and then
+    Before you beging, please identify yourself as the fast thinker and then
     Please provide a quick response to help the user."""
 
     def fast_think(state: AgentState) -> Dict:
@@ -131,7 +131,7 @@ def create_slow_thinker():
     Current conversation:
     {messages}
     
-    Before you beging, please identify yourself and then
+    Before you beging, please identify yourself as the slow thinker and then
     Please provide a thorough analysis and response to help the user."""
 
     def slow_think(state: AgentState) -> Dict:
@@ -160,9 +160,7 @@ workflow.add_node("router", create_router())
 workflow.add_node("fast_thinker", create_fast_thinker())
 workflow.add_node("slow_thinker", create_slow_thinker())
 
-# Add edges
-workflow.add_edge("router", "fast_thinker")
-workflow.add_edge("router", "slow_thinker")
+# Add edges - only need edges to END since routing is handled by Command
 workflow.add_edge("fast_thinker", END)
 workflow.add_edge("slow_thinker", END)
 
