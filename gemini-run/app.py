@@ -105,6 +105,7 @@ def create_fast_thinker():
     Current conversation:
     {messages}
     
+    Before you beging, please identify yourself and then
     Please provide a quick response to help the user."""
 
     def fast_think(state: AgentState) -> Dict:
@@ -130,6 +131,7 @@ def create_slow_thinker():
     Current conversation:
     {messages}
     
+    Before you beging, please identify yourself and then
     Please provide a thorough analysis and response to help the user."""
 
     def slow_think(state: AgentState) -> Dict:
