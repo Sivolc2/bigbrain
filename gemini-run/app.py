@@ -25,7 +25,6 @@ slow_model = ChatOpenAI(
 )  # Powerful model for complex queries
 
 members = ["fast_thinker", "slow_thinker"]
-options = members  # No FINISH needed since we use END directly
 
 
 def format_message(msg: BaseMessage) -> str:
@@ -53,7 +52,6 @@ class RouterOutput(TypedDict):
 
 class AgentState(TypedDict):
     messages: Annotated[List[BaseMessage], add]
-    next: str
 
 
 def create_router():
