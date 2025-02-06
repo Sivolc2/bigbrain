@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "brain"
+version = "0.1.0"
+description = "An advanced code-generation agent using LangGraph"
+authors = ["Clovis VT"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain-core = "^0.3.33"
+langchain-anthropic = "^0.3.6"
+langgraph = "^0.2.69"
+pydantic = "^2.10.6"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=brain --cov-report=term-missing"

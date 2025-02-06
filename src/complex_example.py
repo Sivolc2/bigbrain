@@ -1,7 +1,7 @@
 from typing import TypedDict, Annotated, Literal
 from langgraph.graph import Graph, END
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from enum import Enum
 import json
 
@@ -21,9 +21,9 @@ class Agents(str, Enum):
     
 def create_complex_agent():
     # Create different LLMs for each agent (could use different models or temperatures)
-    planner_llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.2)
-    solver_llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.1)
-    validator_llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+    planner_llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0.2)
+    solver_llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0.1)
+    validator_llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0)
     
     # Define the planner agent
     def planner(state: AgentState) -> AgentState:

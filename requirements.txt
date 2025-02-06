@@ -1,5 +1,5 @@
 langchain
-langchain-openai
+langchain-anthropic
 langgraph
-openai
 python-dotenv
+poetry

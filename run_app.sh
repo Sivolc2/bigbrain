@@ -1,0 +1,2 @@
+poetry shell
+source .env
