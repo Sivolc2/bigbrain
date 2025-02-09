@@ -2,6 +2,7 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from typing import List
+
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
@@ -51,10 +52,10 @@ class LeafNode(Node):
         Check if a file is binary by looking at its first few bytes.
         """
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 # Read first 1024 bytes to check for binary content
                 chunk = f.read(1024)
-                return b'\0' in chunk  # Binary files typically contain null bytes
+                return b"\0" in chunk  # Binary files typically contain null bytes
         except Exception:
             return True  # If we can't read the file, treat it as binary
 
@@ -110,9 +111,9 @@ Provide a clear, structured summary that would help developers understand this c
 
         try:
             response = anthropic_client.messages.create(
-                model="claude-3-haiku-latest",
+                model="claude-3-5-haiku-latest",
                 max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
             return f"Summary of '{self.folder_path}':\n{response.content}"
         except Exception as e:
@@ -194,9 +195,9 @@ Provide a clear, structured synthesis that gives a high-level understanding of t
 
         try:
             response = anthropic_client.messages.create(
-                model="claude-3-haiku-latest",
+                model="claude-3-5-haiku-latest",
                 max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
             return f"Synthesized Summary:\n{response.content}"
         except Exception as e:
@@ -218,12 +219,8 @@ if __name__ == "__main__":
     frontend_top_files = TopLevelLeafNode(frontend_root)
     frontend_src = LeafNode(os.path.join(frontend_root, "src"))
     frontend_public = LeafNode(os.path.join(frontend_root, "public"))
-    
-    frontend_planner = PlannerNode([
-        frontend_top_files,
-        frontend_src,
-        frontend_public
-    ])
+
+    frontend_planner = PlannerNode([frontend_top_files, frontend_src, frontend_public])
 
     # Backend structure
     backend_root = os.path.join(repo_path, "backend")
@@ -234,21 +231,19 @@ if __name__ == "__main__":
     backend_services = LeafNode(os.path.join(backend_root, "services"))
     backend_tests = LeafNode(os.path.join(backend_root, "tests"))
 
-    backend_planner = PlannerNode([
-        backend_top_files,
-        backend_datasets,
-        backend_schemas,
-        backend_scripts,
-        backend_services,
-        backend_tests
-    ])
+    backend_planner = PlannerNode(
+        [
+            backend_top_files,
+            backend_datasets,
+            backend_schemas,
+            backend_scripts,
+            backend_services,
+            backend_tests,
+        ]
+    )
 
     # Root planner combines everything
-    root_planner = PlannerNode([
-        root_files_node,
-        frontend_planner,
-        backend_planner
-    ])
+    root_planner = PlannerNode([root_files_node, frontend_planner, backend_planner])
 
     # Get the overall summary
     summary_output = root_planner.summarize()
