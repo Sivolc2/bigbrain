@@ -3,6 +3,10 @@ import sys
 from abc import ABC, abstractmethod
 from typing import List
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize Anthropic client
 anthropic_client = Anthropic()
