@@ -71,6 +71,41 @@ class LeafNode(Node):
         return f"Summary of folder '{self.folder_path}' with content length {len(self.processed_text)}"
 
 
+class TopLevelLeafNode(LeafNode):
+    """
+    A specialized LeafNode that only processes files in the immediate directory,
+    ignoring subdirectories. This is useful for handling "straggler" files that
+    exist alongside subdirectories in a parent folder.
+    """
+
+    def _ingest_files(self, folder_path: str) -> str:
+        """
+        Ingest only the files in the immediate directory, ignoring subdirectories.
+        Each file's contents are labeled with its relative path.
+        """
+        all_text = []
+        # os.listdir + os.path.isfile to only get immediate files
+        for item in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, item)
+            if os.path.isfile(file_path):  # Only process files, not directories
+                with open(file_path, "r", encoding="utf-8") as f:
+                    file_content = f.read()
+
+                # Format the file content with its path
+                formatted_content = (
+                    f"Contents of file {item}:\n\n```\n{file_content}\n```\n"
+                )
+                all_text.append(formatted_content)
+
+        return "\n\n".join(all_text)
+
+    def summarize(self) -> str:
+        """
+        Summarize the ingested text, specifically noting these are top-level files.
+        """
+        return f"Summary of top-level files in '{self.folder_path}' with content length {len(self.processed_text)}"
+
+
 class PlannerNode(Node):
     """
     PlannerNode holds a list of children nodes.
