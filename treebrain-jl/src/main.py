@@ -111,6 +111,10 @@ class LeafNode(Node):
         if not self.processed_text.strip():
             result = f"No text content found in '{self.folder_path}'"
             print(f"Completed summary for {node_id}")
+            print("\nResult:")
+            print("=" * 40)
+            print(result)
+            print("=" * 40)
             return result
 
         prompt = f"""You are a specialized code analysis AI. Your task is to provide a concise but informative summary of the following code files.
@@ -137,6 +141,10 @@ Provide a clear, structured summary that would help developers understand this c
             result = f"Error generating summary for '{self.folder_path}': {str(e)}"
 
         print(f"Completed summary for {node_id}")
+        print("\nResult:")
+        print("=" * 40)
+        print(result)
+        print("=" * 40)
         return result
 
 
@@ -233,6 +241,10 @@ Provide a clear, structured synthesis that gives a high-level understanding of t
             result = f"Error generating synthesis: {str(e)}"
 
         print(f"Completed summary for {node_id}")
+        print("\nResult:")
+        print("=" * 40)
+        print(result)
+        print("=" * 40)
         return result
 
 
