@@ -2,6 +2,10 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from typing import List
+from anthropic import Anthropic
+
+# Initialize Anthropic client
+anthropic_client = Anthropic()
 
 # ### Problem Statement:
 
@@ -82,13 +86,33 @@ class LeafNode(Node):
 
     def summarize(self) -> str:
         """
-        Summarize the ingested text. For now, let's just return a placeholder
-        or the raw text. In practice, you'd use an LLM or your own summarization
-        algorithm.
+        Use Claude to generate a meaningful summary of the ingested text.
         """
-        # Placeholder for your real summarization logic
-        # e.g. call an LLM or a custom summarizer on self.processed_text
-        return f"Summary of folder '{self.folder_path}' with content length {len(self.processed_text)}"
+        if not self.processed_text.strip():
+            return f"No text content found in '{self.folder_path}'"
+
+        prompt = f"""You are a specialized code analysis AI. Your task is to provide a concise but informative summary of the following code files.
+Focus on:
+1. The main purpose and functionality
+2. Key components and their relationships
+3. Important implementation details
+4. Any notable patterns or design decisions
+
+Here are the files to analyze:
+
+{self.processed_text}
+
+Provide a clear, structured summary that would help developers understand this codebase quickly."""
+
+        try:
+            response = anthropic_client.messages.create(
+                model="claude-3-sonnet-20240229",
+                max_tokens=1000,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            return f"Summary of '{self.folder_path}':\n{response.content}"
+        except Exception as e:
+            return f"Error generating summary for '{self.folder_path}': {str(e)}"
 
 
 class TopLevelLeafNode(LeafNode):
@@ -146,18 +170,33 @@ class PlannerNode(Node):
 
     def summarize(self) -> str:
         """
-        Summarize by aggregating the summaries from all child nodes.
-        In a real system, you'd probably do more sophisticated orchestration.
+        Use Claude to synthesize a higher-level summary from child node summaries.
         """
         summaries = [child.summarize() for child in self.children]
+        combined_summaries = "\n\n".join(summaries)
 
-        # For demonstration, we'll just join the summaries
-        # In a more advanced use case, you'd feed these into another LLM or aggregator.
-        combined_summary = "\n\n".join(summaries)
+        prompt = f"""You are a specialized code analysis AI. Your task is to synthesize a higher-level summary from multiple component summaries of a codebase.
+Focus on:
+1. The overall architecture and system design
+2. How different components interact and relate
+3. Key patterns and design decisions across the system
+4. Important dependencies and data flows
 
-        # Optionally, you could do another pass of summarization on 'combined_summary'
-        # with an LLM or text summarizer. For now, returning as-is.
-        return f"PlannerNode Summary:\n{combined_summary}"
+Here are the component summaries to synthesize:
+
+{combined_summaries}
+
+Provide a clear, structured synthesis that gives a high-level understanding of the entire system."""
+
+        try:
+            response = anthropic_client.messages.create(
+                model="claude-3-sonnet-20240229",
+                max_tokens=1000,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            return f"Synthesized Summary:\n{response.content}"
+        except Exception as e:
+            return f"Error generating synthesis: {str(e)}"
 
 
 if __name__ == "__main__":
