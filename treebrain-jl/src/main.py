@@ -106,7 +106,7 @@ Provide a clear, structured summary that would help developers understand this c
 
         try:
             response = anthropic_client.messages.create(
-                model="claude-3-sonnet-20240229",
+                model="claude-3-haiku-latest",
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -190,7 +190,7 @@ Provide a clear, structured synthesis that gives a high-level understanding of t
 
         try:
             response = anthropic_client.messages.create(
-                model="claude-3-sonnet-20240229",
+                model="claude-3-haiku-latest",
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}]
             )
