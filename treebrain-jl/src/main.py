@@ -39,18 +39,26 @@ class LeafNode(Node):
 
     def _ingest_files(self, folder_path: str) -> str:
         """
-        Ingest all files in the folder and return the raw content combined.
-        For demonstration, this function just concatenates file contents as a string.
-        In a real scenario, you might parse, chunk, or pre-process the files here.
+        Ingest all files in the folder and return formatted content.
+        Each file's contents are labeled with its relative path.
         """
         all_text = []
         for root, _, files in os.walk(folder_path):
             for file in files:
                 file_path = os.path.join(root, file)
+                # Get relative path from the node's folder_path
+                rel_path = os.path.relpath(file_path, folder_path)
+
                 with open(file_path, "r", encoding="utf-8") as f:
-                    # In a production system, you'd handle large files carefully
-                    all_text.append(f.read())
-        return "\n".join(all_text)
+                    file_content = f.read()
+
+                # Format the file content with its path
+                formatted_content = (
+                    f"Contents of file {rel_path}:\n\n```\n{file_content}\n```\n"
+                )
+                all_text.append(formatted_content)
+
+        return "\n\n".join(all_text)
 
     def summarize(self) -> str:
         """
