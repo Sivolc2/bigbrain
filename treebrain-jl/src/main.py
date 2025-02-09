@@ -167,12 +167,45 @@ if __name__ == "__main__":
 
     repo_path = sys.argv[1]
 
-    # Create leaf nodes for frontend and backend
-    frontend_node = LeafNode(os.path.join(repo_path, "frontend"))
-    backend_node = LeafNode(os.path.join(repo_path, "backend"))
+    # Handle root level files
+    root_files_node = TopLevelLeafNode(repo_path)
 
-    # Create a planner node to combine the frontend and backend summaries
-    root_planner = PlannerNode([frontend_node, backend_node])
+    # Frontend structure
+    frontend_root = os.path.join(repo_path, "frontend")
+    frontend_top_files = TopLevelLeafNode(frontend_root)
+    frontend_src = LeafNode(os.path.join(frontend_root, "src"))
+    frontend_public = LeafNode(os.path.join(frontend_root, "public"))
+    
+    frontend_planner = PlannerNode([
+        frontend_top_files,
+        frontend_src,
+        frontend_public
+    ])
+
+    # Backend structure
+    backend_root = os.path.join(repo_path, "backend")
+    backend_top_files = TopLevelLeafNode(backend_root)
+    backend_datasets = LeafNode(os.path.join(backend_root, "datasets"))
+    backend_schemas = LeafNode(os.path.join(backend_root, "schemas"))
+    backend_scripts = LeafNode(os.path.join(backend_root, "scripts"))
+    backend_services = LeafNode(os.path.join(backend_root, "services"))
+    backend_tests = LeafNode(os.path.join(backend_root, "tests"))
+
+    backend_planner = PlannerNode([
+        backend_top_files,
+        backend_datasets,
+        backend_schemas,
+        backend_scripts,
+        backend_services,
+        backend_tests
+    ])
+
+    # Root planner combines everything
+    root_planner = PlannerNode([
+        root_files_node,
+        frontend_planner,
+        backend_planner
+    ])
 
     # Get the overall summary
     summary_output = root_planner.summarize()
