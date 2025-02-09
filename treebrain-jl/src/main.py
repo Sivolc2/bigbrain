@@ -30,6 +30,12 @@ class Node(ABC):
     All subclasses must implement the summarize() method.
     """
 
+    def get_node_id(self) -> str:
+        """
+        Generate a descriptive ID for the node.
+        """
+        return self.__class__.__name__
+
     @abstractmethod
     def summarize(self) -> str:
         """
@@ -46,6 +52,12 @@ class LeafNode(Node):
     def __init__(self, folder_path: str):
         self.folder_path = folder_path
         self.processed_text = self._ingest_files(folder_path)
+
+    def get_node_id(self) -> str:
+        """
+        Generate a descriptive ID including the managed directory.
+        """
+        return f"{self.__class__.__name__}({self.folder_path})"
 
     def _is_binary_file(self, file_path: str) -> bool:
         """
@@ -93,8 +105,13 @@ class LeafNode(Node):
         """
         Use Claude to generate a meaningful summary of the ingested text.
         """
+        node_id = self.get_node_id()
+        print(f"\nStarting summary for {node_id}...")
+
         if not self.processed_text.strip():
-            return f"No text content found in '{self.folder_path}'"
+            result = f"No text content found in '{self.folder_path}'"
+            print(f"Completed summary for {node_id}")
+            return result
 
         prompt = f"""You are a specialized code analysis AI. Your task is to provide a concise but informative summary of the following code files.
 Focus on:
@@ -115,9 +132,12 @@ Provide a clear, structured summary that would help developers understand this c
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}],
             )
-            return f"Summary of '{self.folder_path}':\n{response.content}"
+            result = f"Summary of '{self.folder_path}':\n{response.content}"
         except Exception as e:
-            return f"Error generating summary for '{self.folder_path}': {str(e)}"
+            result = f"Error generating summary for '{self.folder_path}': {str(e)}"
+
+        print(f"Completed summary for {node_id}")
+        return result
 
 
 class TopLevelLeafNode(LeafNode):
@@ -173,10 +193,19 @@ class PlannerNode(Node):
     def __init__(self, children: List[Node]):
         self.children = children
 
+    def get_node_id(self) -> str:
+        """
+        Generate a descriptive ID including number of children.
+        """
+        return f"{self.__class__.__name__}({len(self.children)} children)"
+
     def summarize(self) -> str:
         """
         Use Claude to synthesize a higher-level summary from child node summaries.
         """
+        node_id = self.get_node_id()
+        print(f"\nStarting summary for {node_id}...")
+
         summaries = [child.summarize() for child in self.children]
         combined_summaries = "\n\n".join(summaries)
 
@@ -199,9 +228,12 @@ Provide a clear, structured synthesis that gives a high-level understanding of t
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}],
             )
-            return f"Synthesized Summary:\n{response.content}"
+            result = f"Synthesized Summary:\n{response.content}"
         except Exception as e:
-            return f"Error generating synthesis: {str(e)}"
+            result = f"Error generating synthesis: {str(e)}"
+
+        print(f"Completed summary for {node_id}")
+        return result
 
 
 if __name__ == "__main__":
