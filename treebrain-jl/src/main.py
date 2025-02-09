@@ -1,4 +1,5 @@
 import os
+import sys
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -132,22 +133,21 @@ class PlannerNode(Node):
 
 
 if __name__ == "__main__":
-    # Example usage:
+    if len(sys.argv) != 2:
+        print("Usage: python main.py <path_to_repo>")
+        sys.exit(1)
 
-    # Suppose you have the following folder structure:
-    #   data/
-    #       file1.txt
-    #       file2.txt
-    #   logs/
-    #       log1.txt
-    #       log2.txt
+    repo_path = sys.argv[1]
 
-    leaf_data = LeafNode("data")
-    leaf_logs = LeafNode("logs")
+    # Create leaf nodes for frontend and backend
+    frontend_node = LeafNode(os.path.join(repo_path, "frontend"))
+    backend_node = LeafNode(os.path.join(repo_path, "backend"))
 
-    # Combine leaf nodes into a planner
-    planner = PlannerNode([leaf_data, leaf_logs])
+    # Create a planner node to combine the frontend and backend summaries
+    root_planner = PlannerNode([frontend_node, backend_node])
 
     # Get the overall summary
-    summary_output = planner.summarize()
+    summary_output = root_planner.summarize()
+    print("\nTree-structured Summary:")
+    print("=" * 80)
     print(summary_output)
