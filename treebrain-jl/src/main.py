@@ -38,26 +38,45 @@ class LeafNode(Node):
         self.folder_path = folder_path
         self.processed_text = self._ingest_files(folder_path)
 
+    def _is_binary_file(self, file_path: str) -> bool:
+        """
+        Check if a file is binary by looking at its first few bytes.
+        """
+        try:
+            with open(file_path, 'rb') as f:
+                # Read first 1024 bytes to check for binary content
+                chunk = f.read(1024)
+                return b'\0' in chunk  # Binary files typically contain null bytes
+        except Exception:
+            return True  # If we can't read the file, treat it as binary
+
     def _ingest_files(self, folder_path: str) -> str:
         """
         Ingest all files in the folder and return formatted content.
         Each file's contents are labeled with its relative path.
+        Silently skips binary files.
         """
         all_text = []
+
         for root, _, files in os.walk(folder_path):
             for file in files:
                 file_path = os.path.join(root, file)
-                # Get relative path from the node's folder_path
                 rel_path = os.path.relpath(file_path, folder_path)
 
-                with open(file_path, "r", encoding="utf-8") as f:
-                    file_content = f.read()
+                if self._is_binary_file(file_path):
+                    continue
 
-                # Format the file content with its path
-                formatted_content = (
-                    f"Contents of file {rel_path}:\n\n```\n{file_content}\n```\n"
-                )
-                all_text.append(formatted_content)
+                try:
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        file_content = f.read()
+
+                    # Format the file content with its path
+                    formatted_content = (
+                        f"Contents of file {rel_path}:\n\n```\n{file_content}\n```\n"
+                    )
+                    all_text.append(formatted_content)
+                except (UnicodeDecodeError, Exception):
+                    continue
 
         return "\n\n".join(all_text)
 
@@ -83,12 +102,19 @@ class TopLevelLeafNode(LeafNode):
         """
         Ingest only the files in the immediate directory, ignoring subdirectories.
         Each file's contents are labeled with its relative path.
+        Silently skips binary files.
         """
         all_text = []
-        # os.listdir + os.path.isfile to only get immediate files
+
         for item in os.listdir(folder_path):
             file_path = os.path.join(folder_path, item)
-            if os.path.isfile(file_path):  # Only process files, not directories
+            if not os.path.isfile(file_path):  # Skip directories
+                continue
+
+            if self._is_binary_file(file_path):
+                continue
+
+            try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     file_content = f.read()
 
@@ -97,6 +123,8 @@ class TopLevelLeafNode(LeafNode):
                     f"Contents of file {item}:\n\n```\n{file_content}\n```\n"
                 )
                 all_text.append(formatted_content)
+            except (UnicodeDecodeError, Exception):
+                continue
 
         return "\n\n".join(all_text)
 
