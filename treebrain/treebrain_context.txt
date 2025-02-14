@@ -1,0 +1,111 @@
+Here’s a detailed implementation plan for the MVP, structured to prioritize modularity, validation, and agent coordination while aligning with your core goals:
+
+---
+
+### **MVP Implementation Outline**
+#### **Phase 1: Core Architecture & Agent Definitions**
+1. **Agent Roles & Interfaces**  
+   - **Planning Agent**  
+     - **Inputs**: Project context (README, agent status updates, directory structure).  
+     - **Outputs**: Task decomposition plan, workflow assignments, updated README/docs.  
+     - **Boundaries**: Focus on *task selection/prioritization* based on current state. Never handles knowledge retrieval/execution.  
+   - **Action Agents (Frontend/Backend)**  
+     - **Inputs**: Assigned task, project directory snapshot, feedback from code execution.  
+     - **Outputs**: Code/feature implementations, tests, status updates.  
+     - **Boundaries**: Domain-specific execution (e.g., frontend only modifies UI code). Must request external context via Librarian.  
+   - **Librarian Agent**  
+     - **Inputs**: Context requests (file paths, search queries).  
+     - **Outputs**: Directory structure snapshots, summaries of requested files, search engine results (if integrated).  
+     - **Boundaries**: No task/planning logic—only *knowledge retrieval*.  
+
+2. **Shared State Management**  
+   - **Project Hub**: Central database/API tracking:  
+     - Real-time directory structure (updated by Librarian).  
+     - README/requirements (tracked by Planner).  
+     - Agent statuses (e.g., `backend: "implementing login API"`).  
+   - **Event Log**: Immutable audit trail of agent decisions, code changes, and validation results.  
+
+3. **Communication Protocols**  
+   - All agents use standardized JSON schema for:  
+     - **Task Requests**: `{"task_description": "...", "required_context": ["file_x", "search_query_y"]}`.  
+     - **Status Updates**: `{"agent": "frontend", "status": "success", "output_files": ["login_ui.js"]}`.  
+   - Librarian responses use prioritization (e.g., "Recent files > legacy docs > search engine results").  
+
+---
+
+#### **Phase 2: Workflow Design**
+**Step 1: Task Initiation**  
+- **User Input**: "Build a login feature with OAuth."  
+- **Planning Agent**:  
+  - Breaks task into subtasks (e.g., "UI components" → frontend, "API endpoints" → backend).  
+  - Assigns each subtask to the relevant Action Agent with context requirements (e.g., backend needs existing API schema).  
+  - Updates README with planned features/tests.  
+
+**Step 2: Execution Loop**  
+1. **Action Agent (Frontend/Backend)**:  
+   - Pulls directory snapshot from Librarian.  
+   - Requests additional context (e.g., "What’s the current API URL?") if needed.  
+   - Writes code → runs local tests → submits code + test results to **Validation Layer**.  
+2. **Validation Layer**:  
+   - **Simple Tests**: Run unit tests, check for errors.  
+   - **Complex Tests**: Forward code to Debugger Agent (stretch goal) for semantic validation.  
+   - On failure: Return errors to Action Agent for revision.  
+   - On success: Push code to Project Hub and notify Planner.  
+
+**Step 3: Synchronization**  
+- **Planner**:  
+  - Reviews updated project state (tests passed, code merged).  
+  - Decides next task (e.g., "Write integration tests") or marks feature as complete.  
+  - Updates README with new status.  
+
+---
+
+#### **Phase 3: Validation & Safety**
+1. **Checkpoint Validation**  
+   - After each code submission, run:  
+     - **Automated Tests**: Pre-defined unit tests (Action Agents).  
+     - **Consistency Checks**: Ensure code aligns with Planner’s task description.  
+   - Validation failures trigger Agent reverts/retries (max 3 loops to prevent infinite cycles).  
+
+2. **Anti-Hallucination Guards**  
+   - **Librarian Agent**: Cross-references code with search engine results (e.g., "Does this OAuth method match best practices?").  
+   - **Planner**: Flags mismatches between task goals and code (e.g., backend implements "login_ui.js").  
+
+3. **Loop Prevention**  
+   - **Event Log Analysis**: Planner reviews past actions before assigning tasks (e.g., "Frontend failed 3x on this task → escalate to Debugger Agent").  
+
+---
+
+#### **Phase 4: Deployment & Testing**
+- **Manual Triggering**: Start with user-initiated tasks (e.g., "Start Feature X") to test agent coordination.  
+- **Baseline Test Case**:  
+  - **Task**: "Build a TODO app with React frontend + Flask backend."  
+  - **Success Criteria**:  
+    - MVP delivered within 10 execution loops.  
+    - All unit tests pass; README matches final implementation.  
+- **Stretch Goals**:  
+  - Add a Debugger Agent (Complex Validation) to handle ambiguous failures.  
+  - Integrate lightweight search engine (e.g., Serper API) into Librarian.  
+
+---
+
+### **Key Risks & Mitigations**
+1. **Agent Stalls**  
+   - **Fallback**: Planner re-assigns stuck tasks to fresh Action Agents.  
+   - **Timeout**: Automatically escalate after 3 failures.  
+
+2. **Context Staleness**  
+   - Librarian invalidates directory snapshots every 5 minutes.  
+   - Planner rechecks Project Hub before major decisions.  
+
+3. **Validation Latency**  
+   - Parallelize simple tests (unit tests) while running complex validation.  
+
+---
+
+### **Post-MVP Roadmap**
+1. **Dynamic Workflow Library**: Allow Planner to compose multi-agent workflows (e.g., "Run frontend + backend + integration tests").  
+2. **Human-in-the-Loop**: Add manual approval gates for critical tasks (e.g., production deployment).  
+3. **Gamified Interaction**: Reward agents for efficiency (e.g., fewer revisions → higher priority in future tasks).  
+
+By focusing on clear role separation, checkpoint validation, and shared state management, this MVP establishes a foundation for scalable, LLM-augmented development systems.

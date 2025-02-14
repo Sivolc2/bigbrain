@@ -1,0 +1,24 @@
+{
+    "role": "frontend",
+    "responsibilities": [
+        "Implement user interface components",
+        "Handle client-side state management",
+        "Implement user interactions and events",
+        "Ensure responsive design",
+        "Implement client-side validation"
+    ],
+    "working_directory": "frontend/",
+    "file_patterns": [
+        "*.tsx",
+        "*.jsx",
+        "*.css",
+        "*.html",
+        "package.json"
+    ],
+    "validation_rules": [
+        "Must include component tests",
+        "Must follow accessibility guidelines",
+        "Must be responsive on all devices",
+        "Must handle loading and error states"
+    ]
+} 

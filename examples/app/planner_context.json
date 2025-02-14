@@ -1,0 +1,32 @@
+{
+    "role": "planner",
+    "project_structure": {
+        "frontend": {
+            "path": "frontend/",
+            "tech_stack": ["React", "TypeScript", "CSS"],
+            "entry_points": ["src/index.tsx", "src/App.tsx"]
+        },
+        "backend": {
+            "path": "backend/",
+            "tech_stack": ["Python", "FastAPI", "SQLAlchemy"],
+            "entry_points": ["src/main.py", "src/app.py"]
+        }
+    },
+    "task_decomposition_rules": [
+        "Break down tasks by technical domain (frontend/backend)",
+        "Identify dependencies between tasks",
+        "Prioritize tasks based on dependencies",
+        "Include testing requirements for each task"
+    ],
+    "coordination_rules": [
+        "Ensure API contracts are defined before implementation",
+        "Coordinate database schema changes",
+        "Manage feature flags and versioning",
+        "Track cross-cutting concerns"
+    ],
+    "project_constraints": {
+        "max_parallel_tasks": 2,
+        "require_tests": true,
+        "require_documentation": true
+    }
+} 

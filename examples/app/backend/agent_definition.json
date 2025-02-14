@@ -1,0 +1,24 @@
+{
+    "role": "backend",
+    "responsibilities": [
+        "Implement API endpoints",
+        "Handle data persistence",
+        "Implement business logic",
+        "Manage authentication/authorization",
+        "Handle server-side validation"
+    ],
+    "working_directory": "backend/",
+    "file_patterns": [
+        "*.py",
+        "requirements.txt",
+        "*.sql",
+        "*.yaml",
+        "Dockerfile"
+    ],
+    "validation_rules": [
+        "Must include API tests",
+        "Must handle error cases",
+        "Must include input validation",
+        "Must follow security best practices"
+    ]
+} 

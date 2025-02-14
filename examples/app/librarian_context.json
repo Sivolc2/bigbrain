@@ -1,0 +1,47 @@
+{
+    "role": "librarian",
+    "knowledge_bases": {
+        "codebase": {
+            "root_path": "./",
+            "excluded_patterns": [
+                "node_modules/",
+                "__pycache__/",
+                "*.pyc",
+                ".git/"
+            ]
+        },
+        "documentation": {
+            "paths": [
+                "docs/",
+                "README.md",
+                "**/README.md"
+            ]
+        },
+        "configuration": {
+            "paths": [
+                "*.json",
+                "*.yaml",
+                "*.env.example"
+            ]
+        }
+    },
+    "caching_rules": {
+        "max_cache_age_seconds": 300,
+        "max_cache_size_mb": 100,
+        "priority_files": [
+            "README.md",
+            "package.json",
+            "requirements.txt"
+        ]
+    },
+    "search_rules": {
+        "max_results": 50,
+        "include_file_content": true,
+        "prioritize_recent_files": true
+    },
+    "context_gathering": {
+        "include_git_history": true,
+        "include_dependencies": true,
+        "include_tests": true
+    }
+} 
