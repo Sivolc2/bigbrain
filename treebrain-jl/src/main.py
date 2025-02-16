@@ -136,7 +136,7 @@ Provide a clear, structured summary that would help developers understand this c
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}],
             )
-            result = f"Summary of '{self.folder_path}':\n{response.content}"
+            result = f"Summary of '{self.folder_path}':\n{response.content[0].text}"
         except Exception as e:
             result = f"Error generating summary for '{self.folder_path}': {str(e)}"
 
@@ -236,7 +236,7 @@ Provide a clear, structured synthesis that gives a high-level understanding of t
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}],
             )
-            result = f"Synthesized Summary:\n{response.content}"
+            result = f"Synthesized Summary:\n{response.content[0].text}"
         except Exception as e:
             result = f"Error generating synthesis: {str(e)}"
 
